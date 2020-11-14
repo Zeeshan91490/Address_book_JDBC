@@ -1,0 +1,60 @@
+{
+  "contacts": [
+    {
+      "id": 1,
+      "first_name": "Zeeshan",
+      "last_name": "Khan",
+      "address": "Home",
+      "city": "Aligarh",
+      "state": "UP",
+      "pin": "202001",
+      "phone": "7017756457",
+      "email": "zeeshankhan91490@gmail,com"
+    },
+    {
+      "id": 2,
+      "first_name": "Nida",
+      "last_name": "Meraj",
+      "address": "Home",
+      "city": "Aligarh",
+      "state": "UP",
+      "pin": "202001",
+      "phone": "7017756457",
+      "email": "zeeshankhan91490@gmail,com"
+    },
+    {
+      "id": 3,
+      "first_name": "Kashif",
+      "last_name": "Khan",
+      "address": "Home",
+      "city": "Aligarh",
+      "state": "UP",
+      "pin": "202001",
+      "phone": "7017756457",
+      "email": "zeeshankhan91490@gmail,com"
+    },
+    {
+      "id": 4,
+      "first_name": "Hena",
+      "last_name": "Khan",
+     "address": "Home",
+      "city": "Aligarh",
+      "state": "UP",
+      "pin": "202001",
+      "phone": "7017756457",
+      "email": "zeeshankhan91490@gmail,com"
+    },
+    {
+      "id": 5,
+      "first_name": "Maaz",
+      "last_name": "Khan",
+      "address": "Home",
+      "city": "Aligarh",
+      "state": "UP",
+      "pin": "202001",
+      "phone": "7017756457",
+      "email": "zeeshankhan91490@gmail,com"
+    
+    }
+  ]
+}
