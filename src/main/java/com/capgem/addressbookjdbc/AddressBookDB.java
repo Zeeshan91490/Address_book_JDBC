@@ -1,17 +1,13 @@
 package com.capg.addressbookjdbc;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AddressBookDB {
 	public static final String URL = "jdbc:mysql://localhost:3306/address_book_service";
@@ -21,7 +17,6 @@ public class AddressBookDB {
 
 	/**
 	 * UC16
-	 * 
 	 * @return
 	 * @throws DBCustomException
 	 */
@@ -39,8 +34,7 @@ public class AddressBookDB {
 	}
 
 	/**
-	 * UC16
-	 * 
+	 * UC16 
 	 * @return
 	 * @throws DBCustomException
 	 */
@@ -177,166 +171,4 @@ public class AddressBookDB {
 		return false;
 	}
 
-	/**
-	 * UC18
-	 * 
-	 * @return
-	 * @throws DBCustomException
-	 */
-	public static List<Contact> viewAddressBookByDate(LocalDate startDate, LocalDate endDate) throws DBCustomException {
-		List<Contact> contactListByDate = new ArrayList<>();
-		String query = "SELECT id,first_name,last_name,phone,email,address, city, state, pin,start_date"
-				+ " FROM person_details JOIN address_details" + " ON person_details.add_id = address_details.add_id "
-				+ "WHERE `start_date` BETWEEN ? and ?";
-		try (Connection connection = getConnection()) {
-			PreparedStatement statement = connection.prepareStatement(query);
-			statement.setDate(1, Date.valueOf(startDate));
-			statement.setDate(2, Date.valueOf(endDate));
-			ResultSet result = statement.executeQuery();
-			while (result.next()) {
-				int id = result.getInt(1);
-				String first_name = result.getString(2);
-				String last_name = result.getString(3);
-				String phone = result.getString(4);
-				String email = result.getString(5);
-				String address = result.getString(6);
-				String city = result.getString(7);
-				String state = result.getString(8);
-				String pin = result.getString(9);
-				Contact contact = new Contact(id, first_name, last_name, phone, email, address, city, state, pin);
-				System.out.println(contact);
-				contactListByDate.add(contact);
-			}
-		} catch (SQLException e) {
-			System.out.println(e);
-			throw new DBCustomException("Failed to retreive contacts within given dates");
-		}
-		return contactListByDate;
-	}
-
-	/**
-	 * UC19
-	 * 
-	 * @param cityOrState
-	 * @return
-	 * @throws DBCustomException
-	 */
-	public static Map<String, Integer> viewCountByCityOrState(String cityOrState) throws DBCustomException {
-		Map<String, Integer> noOfContacts = new HashMap<>();
-		String query = String.format("SELECT %s,COUNT(*) FROM person_details Join address_details "
-				+ "ON person_details.add_id = address_details.add_id GROUP BY %s", cityOrState, cityOrState);
-		try (Connection connection = getConnection()) {
-			Statement statement = connection.createStatement();
-			ResultSet result = statement.executeQuery(query);
-			while (result.next()) {
-				noOfContacts.put(result.getString(1), result.getInt(2));
-				System.out.println(result.getString(1) + "-" + result.getInt(2));
-			}
-		} catch (SQLException e) {
-			throw new DBCustomException("Failed to count contacts grouped by state or city!!");
-		}
-		return noOfContacts;
-	}
-
-	/**
-	 * UC20
-	 * 
-	 * @param first_name
-	 * @param last_name
-	 * @param phone
-	 * @param email
-	 * @param address
-	 * @param city
-	 * @param state
-	 * @param pin
-	 * @param add_id
-	 * @param book_id
-	 * @param start_date
-	 * @throws DBCustomException
-	 */
-	public static void insertContactInformation(String first_name, String last_name, String phone, String email,
-			String address, String city, String state, String pin, String add_id, String[] book_id, String start_date)
-			throws DBCustomException {
-		String personDetails = String.format(
-				"insert into person_details(first_name,last_name, phone, email, start_date, add_id) values('%s','%s','%s','%s','%s','%s')",
-				first_name, last_name, phone, email, start_date, add_id);
-		String query = String.format("SELECT add_id FROM address_details WHERE `add_id` = '%s'", add_id);
-		String addAddress = "INSERT INTO address_details VALUES(?,?,?,?,?)";
-		try (Connection connection = getConnection()) {
-			connection.setAutoCommit(false);
-			int rowsUpdated = 0;
-			int id = -1;
-			Statement statement = connection.createStatement();
-			rowsUpdated = statement.executeUpdate(personDetails, Statement.RETURN_GENERATED_KEYS);
-			ResultSet resultSetID = null;
-			if (rowsUpdated == 1) {
-				resultSetID = statement.getGeneratedKeys();
-				if (resultSetID.next())
-					id = resultSetID.getInt(1);
-			} else {
-				throw new DBCustomException("Unable to add person details");
-			}
-			Statement addID = connection.createStatement();
-			ResultSet resultSet = addID.executeQuery(query);
-			if (!resultSet.next()) {
-				PreparedStatement preparedStatement = connection.prepareStatement(addAddress);
-				preparedStatement.setString(1, add_id);
-				preparedStatement.setString(2, address);
-				preparedStatement.setString(3, city);
-				preparedStatement.setString(4, state);
-				preparedStatement.setString(5, pin);
-				rowsUpdated = preparedStatement.executeUpdate();
-				if (rowsUpdated != 1) {
-					throw new DBCustomException("Unable to insert address details");
-				}
-			}
-
-			for (String bookID : book_id) {
-				String book = String.format("insert into book_person values('%s','%s')", bookID, id);
-				Statement bookPerson = connection.createStatement();
-				rowsUpdated = bookPerson.executeUpdate(book);
-				if (rowsUpdated != 1) {
-					throw new DBCustomException("Unable to insert book details");
-				}
-			}
-			connection.commit();
-		} catch (SQLException e) {
-			System.out.println(e);
-		}
-
-	}
-
-	/**
-	 * UC21
-	 * 
-	 * @param contactList
-	 */
-	public static void insertMultipleContactsUsingThreads(List<Contact> contactList) {
-		Map<Integer, Boolean> contactAddStatus = new HashMap<>();
-		for (Contact contact : contactList) {
-			System.out.println(contact.hashCode());
-			Runnable task = () -> {
-				contactAddStatus.put(contact.hashCode(), true);
-				try {
-					insertContactInformation(contact.getFirst_name(), contact.getLast_name(), contact.getPhone(),
-							contact.getEmail(), contact.getAddress(), contact.getCity(), contact.getState(),
-							contact.getPin(), contact.getAdd_id(), contact.getBook_id(), contact.getStart_date());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				contactAddStatus.remove(contact.hashCode());
-			};
-			Thread thread = new Thread(task, contact.getFirst_name());
-			thread.start();
-		}
-		while (!contactAddStatus.isEmpty()) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 }
-
-

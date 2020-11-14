@@ -1,4 +1,3 @@
-
 package com.capg.addressbookjdbc;
 
 public class Contact {
