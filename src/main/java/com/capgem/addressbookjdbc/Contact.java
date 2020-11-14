@@ -1,14 +1,10 @@
-
 package com.capg.addressbookjdbc;
 
 public class Contact {
 	int id;
-	String first_name, last_name, phone, email, address, city, state, pin;
-	private String start_date;
-	private String[] book_id;
-	private String add_id;
+	String first_name,last_name,phone,email,address, city, state, pin;
 
-	public Contact(int id, String first_name, String last_name, String phone, String email, String address, String city,
+	public Contact(int id,String first_name, String last_name, String phone, String email, String address, String city,
 			String state, String pin) {
 		super();
 		this.id = id;
@@ -20,21 +16,6 @@ public class Contact {
 		this.city = city;
 		this.state = state;
 		this.pin = pin;
-	}
-
-	public Contact(String first_name, String last_name, String phone, String email, String address, String city,
-			String state, String pin, String add_id, String[] book_id, String start_date) {
-		this.first_name = first_name;
-		this.last_name = last_name;
-		this.phone = phone;
-		this.email = email;
-		this.address = address;
-		this.city = city;
-		this.state = state;
-		this.pin = pin;
-		this.setAdd_id(add_id);
-		this.setBook_id(book_id);
-		this.setStart_date(start_date);
 	}
 
 	public int getId() {
@@ -115,29 +96,6 @@ public class Contact {
 				+ ", email=" + email + ", address=" + address + ", city=" + city + ", state=" + state + ", pin=" + pin
 				+ "]";
 	}
-
-	public String getStart_date() {
-		return start_date;
-	}
-
-	public void setStart_date(String start_date) {
-		this.start_date = start_date;
-	}
-
-	public String[] getBook_id() {
-		return book_id;
-	}
-
-	public void setBook_id(String[] book_id) {
-		this.book_id = book_id;
-	}
-
-	public String getAdd_id() {
-		return add_id;
-	}
-
-	public void setAdd_id(String add_id) {
-		this.add_id = add_id;
-	}
-
+	
+	
 }
