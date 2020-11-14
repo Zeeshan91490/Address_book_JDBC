@@ -21,7 +21,6 @@ public class AddressBookDB {
 
 	/**
 	 * UC16
-	 * 
 	 * @return
 	 * @throws DBCustomException
 	 */
@@ -39,8 +38,7 @@ public class AddressBookDB {
 	}
 
 	/**
-	 * UC16
-	 * 
+	 * UC16 
 	 * @return
 	 * @throws DBCustomException
 	 */
@@ -176,7 +174,7 @@ public class AddressBookDB {
 		}
 		return false;
 	}
-
+	
 	/**
 	 * UC18
 	 * 
@@ -237,7 +235,7 @@ public class AddressBookDB {
 		}
 		return noOfContacts;
 	}
-
+	
 	/**
 	 * UC20
 	 * 
@@ -305,38 +303,4 @@ public class AddressBookDB {
 		}
 
 	}
-
-	/**
-	 * UC21
-	 * 
-	 * @param contactList
-	 */
-	public static void insertMultipleContactsUsingThreads(List<Contact> contactList) {
-		Map<Integer, Boolean> contactAddStatus = new HashMap<>();
-		for (Contact contact : contactList) {
-			System.out.println(contact.hashCode());
-			Runnable task = () -> {
-				contactAddStatus.put(contact.hashCode(), true);
-				try {
-					insertContactInformation(contact.getFirst_name(), contact.getLast_name(), contact.getPhone(),
-							contact.getEmail(), contact.getAddress(), contact.getCity(), contact.getState(),
-							contact.getPin(), contact.getAdd_id(), contact.getBook_id(), contact.getStart_date());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				contactAddStatus.remove(contact.hashCode());
-			};
-			Thread thread = new Thread(task, contact.getFirst_name());
-			thread.start();
-		}
-		while (!contactAddStatus.isEmpty()) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 }
-
-
